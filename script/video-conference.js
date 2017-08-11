@@ -7,7 +7,7 @@ loadLocalStream(true); //muted
 countFriends(VIDEO_CONFERENCE_ROOM, (count) => {
   let joinLabel = "Join this conversation with " + count + " other" + (count > 1 ? "s" : "");
   $(".join-container").show();
-  $(".join-container .join-label").text(count == 0 ? "Be the first to join this conversation" : joinLabel);
+  $(".join-container .join-label").text(count == 0 ? "Join this conversation" : joinLabel);
 });
 
 //Join conversation

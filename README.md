@@ -2,7 +2,7 @@
 
 The client: (private)
 
-Demo page: deploying
+Demo page: https://rcn-webrtc-server.herokuapp.com/
 
 # Get started
 1. `yarn`
