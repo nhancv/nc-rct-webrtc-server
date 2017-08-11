@@ -1,0 +1,21 @@
+{
+  "name": "rcn-webrtc-server",
+  "version": "1.0.0",
+  "description": "Fork of react-native-webrtc server",
+  "main": "app.js",
+  "author": "Nhan Cao",
+  "engines": {
+    "node": "v7.4.0"
+  },
+  "scripts": {
+    "open": "heroku open",
+    "logs": "heroku logs --tail",
+    "deploy": "git push heroku master",
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "express": "4.14.1",
+    "open": "0.0.5",
+    "socket.io": "1.3.4"
+  }
+}
