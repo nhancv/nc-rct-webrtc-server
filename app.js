@@ -133,6 +133,6 @@ io.on('connection', function (socket) {
 
     socket.on("newroom", function (data) {
         console.log("New room: ", data);
-        socket.broadcast.emit('newroom', data);
+        io.emit('newroom', data);
     })
 });
