@@ -21,7 +21,8 @@ let handleJoinConversationClick = () => {
   join(VIDEO_CONFERENCE_ROOM, name, () => {
     $(".join-container").hide();
     $(".videos-container").show();
-    $(".chat-container").show();
+    //@nhancv TODO: Disable because data channel is not stable
+    // $(".chat-container").show();
   });
 };
 

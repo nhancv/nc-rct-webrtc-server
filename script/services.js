@@ -165,6 +165,9 @@ socket.on('leave', function (socketId) {
 
 socket.on('connect', function (data) {
     console.log('connect');
+    getRoomList((data) => {
+
+    })
 });
 
 socket.on("join", function (friend) {
@@ -173,13 +176,25 @@ socket.on("join", function (friend) {
     console.log("New friend joint conversation: ", friend);
 });
 
+socket.on("newroom", function (room) {
+    console.log("New room: ", room);
+    //@nhancv TODO: do with new room
+
+});
+
 function logError(error) {
     console.log("logError", error);
 }
 
-
 //------------------------------------------------------------------------------
 // Services
+function getRoomList(callback) {
+    socket.emit("list", {}, (data) => {
+        console.log("Get list: ", data);
+        callback(data);
+    });
+}
+
 function countFriends(roomId, callback) {
     socket.emit("count", roomId, (count) => {
         console.log("Count friends result: ", count);
