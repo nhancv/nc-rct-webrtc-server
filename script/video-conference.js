@@ -23,7 +23,7 @@ let handleJoinConversationClick = () => {
     $(".videos-container").show();
     $(".chat-container").show();
   });
-}
+};
 
 //Open peer connection successfully: show friend
 window.onFriendCallback = (socketId, stream) => {
@@ -46,31 +46,31 @@ window.onFriendCallback = (socketId, stream) => {
   thumbnailElement.appendChild(nameElement);
 
   document.getElementsByClassName("videos-container")[0].appendChild(thumbnailElement);
-}
+};
 
 window.onDataChannelMessage = (message) => {
   addMessage(message);
-}
+};
 
 window.onFriendLeft = (socketId) => {
   $("#friend-" + socketId).remove();
-}
+};
 
 function handleInputChatContentKeyPress(event) {
-  if (event.keyCode != 13) {
+  if (event.keyCode !== 13) {
     return;
   }
-  let content = $(".input-container textarea").val().trim();
+  let content = $(".input-container input").val().trim();
   if(content != "") {
     let message = {
       name: me.name,
       content
-    }
+    };
     broadcastMessage(message);
     addMessage(message);
   }
   setTimeout(() => {
-    $(".input-container textarea").val("");
+    $(".input-container input").val("");
   }, 100);
 }
 
