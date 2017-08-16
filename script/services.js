@@ -5,11 +5,11 @@ var configuration = {"iceServers": [{"url": "stun:stun.l.google.com:19302"}]};
 var peerConnections = {}; //map of {socketId: socket.io id, RTCPeerConnection}
 var remoteViewContainer = document.getElementById("remoteViewContainer");
 let localStream = null;
-let friends = null; //list of {socketId, name}
-let me = null; //{socketId, name}
+let friends = null; //list of {socketId, displayName}
+let me = null; //{socketId, displayName}
 
-function join(roomId, name, callback) {
-    socket.emit('join', {roomId, name}, function (result) {
+function join(roomId, displayName, callback) {
+    socket.emit("join-server", {roomId, displayName}, function (result) {
         friends = result;
         console.log('Joins', friends);
         friends.forEach((friend) => {
@@ -18,7 +18,7 @@ function join(roomId, name, callback) {
         if (callback !== null) {
             me = {
                 socketId: socket.id,
-                name: name
+                displayName: displayName
             };
             callback();
         }
@@ -34,7 +34,7 @@ function createPeerConnection(friend, isOffer) {
     retVal.onicecandidate = function (event) {
         console.log('onicecandidate', event);
         if (event.candidate) {
-            socket.emit('exchange', {'to': socketId, 'candidate': event.candidate});
+            socket.emit("exchange-server", {'to': socketId, 'candidate': event.candidate});
         }
     };
 
@@ -43,7 +43,7 @@ function createPeerConnection(friend, isOffer) {
             console.log('createOffer', desc);
             retVal.setLocalDescription(desc, function () {
                 console.log('setLocalDescription', retVal.localDescription);
-                socket.emit('exchange', {'to': socketId, 'sdp': retVal.localDescription});
+                socket.emit("exchange-server", {'to': socketId, 'sdp': retVal.localDescription});
             }, logError);
         }, logError);
     }
@@ -121,7 +121,7 @@ function exchange(data) {
         if (friend === null) {
             friend = {
                 socketId: fromId,
-                name: ""
+                displayName: ""
             }
         }
         pc = createPeerConnection(friend, false);
@@ -135,7 +135,7 @@ function exchange(data) {
                     console.log('createAnswer', desc);
                     pc.setLocalDescription(desc, function () {
                         console.log('setLocalDescription', pc.localDescription);
-                        socket.emit('exchange', {'to': fromId, 'sdp': pc.localDescription});
+                        socket.emit("exchange-server", {'to': fromId, 'sdp': pc.localDescription});
                     }, logError);
                 }, logError);
         }, logError);
@@ -155,28 +155,26 @@ function leave(socketId) {
     }
 }
 
-socket.on('exchange', function (data) {
+socket.on("connect", function (data) {
+    console.log('connect');
+    getRoomList((data) => {});
+});
+
+socket.on("exchange-client", function (data) {
     exchange(data);
 });
 
-socket.on('leave', function (socketId) {
+socket.on("leave-client", function (socketId) {
     leave(socketId);
 });
 
-socket.on('connect', function (data) {
-    console.log('connect');
-    getRoomList((data) => {
-
-    })
-});
-
-socket.on("join", function (friend) {
+socket.on("join-client", function (friend) {
     //new friend:
     friends.push(friend);
     console.log("New friend joint conversation: ", friend);
 });
 
-socket.on("newroom", function (room) {
+socket.on("newroom-client", function (room) {
     console.log("New room: ", room);
     //@nhancv TODO: do with new room
 
@@ -189,14 +187,14 @@ function logError(error) {
 //------------------------------------------------------------------------------
 // Services
 function getRoomList(callback) {
-    socket.emit("list", {}, (data) => {
+    socket.emit("list-server", {}, (data) => {
         console.log("Get list: ", data);
         callback(data);
     });
 }
 
 function countFriends(roomId, callback) {
-    socket.emit("count", roomId, (count) => {
+    socket.emit("count-server", roomId, (count) => {
         console.log("Count friends result: ", count);
         callback(count);
     });

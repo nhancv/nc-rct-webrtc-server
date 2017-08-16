@@ -43,7 +43,7 @@ window.onFriendCallback = (socketId, stream) => {
 
   let nameElement = document.createElement("div");
   nameElement.className = "name";
-  nameElement.innerText = (friend != null ? friend.name : "");
+  nameElement.innerText = (friend != null ? friend.displayName : "");
   thumbnailElement.appendChild(nameElement);
 
   document.getElementsByClassName("videos-container")[0].appendChild(thumbnailElement);
@@ -64,7 +64,7 @@ function handleInputChatContentKeyPress(event) {
   let content = $(".input-container input").val().trim();
   if(content != "") {
     let message = {
-      name: me.name,
+      name: me.displayName,
       content
     };
     broadcastMessage(message);
