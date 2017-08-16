@@ -114,21 +114,17 @@ io.on('connection', function (socket) {
             for (let i = 0; i < roomList[roomId].participant.length; i++) {
                 if (roomList[roomId].participant[i].socketId == socket.id) {
                     roomList[roomId].participant.splice(i, 1);
-                    if (socket.room) {
-                        io.emit('leave', roomList[roomId].participant[i]);
-                        socket.leave(socket.id);
-                    }
+                    io.emit('leave', roomList[roomId].participant[i]);
                     break;
                 }
             }
             if (roomList[roomId].participant.length === 0) {
                 delete roomList[roomId];
-                if (socket.room) {
-                    var room = socket.room;
-                    io.emit('leaveall', roomId);
-                    socket.leave(room);
-                }
+                io.emit('leaveall', roomId);
             }
+        }
+        if (socket.room) {
+            socket.leave(socket.room);
         }
     });
 
