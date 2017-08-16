@@ -57,18 +57,75 @@ function socketIdsInRoom(roomId) {
     }
 }
 
+/*************************************************
+ * Find participant by socket id. Return index of array if input has roomId and resIndex = true
+ */
+function findParticipant(socketId, roomId, resIndex) {
+    if (roomId === undefined || roomId === null) {
+        for (let roomId in roomList) {
+            for (let i = 0; i < roomList[roomId].participant.length; i++) {
+                if (roomList[roomId].participant[i].socketId == socketId) {
+                    return resIndex ? i : roomList[roomId].participant[i];
+                }
+            }
+        }
+    } else {
+        for (let i = 0; i < roomList[roomId].participant.length; i++) {
+            if (roomList[roomId].participant[i].socketId == socketId) {
+                return resIndex ? i : roomList[roomId].participant[i];
+            }
+        }
+    }
+    return null;
+}
+
+/**
+ {
+     id:
+     name:
+     token: to detect owner
+ }
+ * @param room
+ * @param error
+ */
+function createNewRoom(room, error) {
+    if (roomList.hasOwnProperty(room.id)) {
+        if (error) error("Room already used.");
+    } else {
+
+        roomList[room.id] = {
+            name: room.name,
+            token: room.token,
+            participant: []
+        };
+
+        console.log("New room: ", room);
+        io.emit('newroom', room);
+    }
+}
+
 io.on('connection', function (socket) {
-    console.log('Connection');
+    console.log('Connection: ', socket.id);
 
     socket.on('disconnect', function () {
         console.log('Disconnect');
-        delete roomList[socket.id];
+
+        for (let roomId in roomList) {
+            for (let i = 0; i < roomList[roomId].participant.length; i++) {
+                if (roomList[roomId].participant[i].socketId == socket.id) {
+                    roomList[roomId].participant[i].splice(i, 1);
+                    break;
+                }
+            }
+        }
+
         if (socket.room) {
             var room = socket.room;
             io.to(room).emit('leave', socket.id);
             socket.leave(room);
         }
     });
+
 
     /**
      * Callback: list of {socketId, name: name of user}
@@ -79,26 +136,35 @@ io.on('connection', function (socket) {
         socket.join(roomId);
         socket.room = roomId;
 
-        roomList[socket.id] = {
+        createNewRoom({
             id: roomId,
-            name: name
-        };
+            name: roomId,
+            token: socket.id
+        });
+        roomList[roomId].participant.push({
+            socketId: socket.id,
+            displayName: name
+        });
 
         var socketIds = socketIdsInRoom(roomId);
         let friends = socketIds.map((socketId) => {
+
+            let room = findParticipant(socketId);
             return {
                 socketId: socketId,
-                name: roomList[socketId].name
+                displayName: room === null ? null : room.displayName
             }
         }).filter((friend) => friend.socketId != socket.id);
         callback(friends);
         //broadcast
         friends.forEach((friend) => {
             io.sockets.connected[friend.socketId].emit("join", {
-                socketId: socket.id, name
+                socketId: socket.id,
+                displayName: name
             });
         });
         console.log('Join: ', joinData);
+
     });
 
     socket.on('exchange', function (data) {
@@ -114,25 +180,10 @@ io.on('connection', function (socket) {
     });
 
     socket.on("list", function (data, callback) {
-        let roomListParsed = {};
-        for (let socketId in roomList) {
-            if (roomListParsed.hasOwnProperty(roomList[socketId].id)) {
-                roomListParsed[roomList[socketId].id].push({
-                    socketId: socketId,
-                    name: roomList[socketId].name
-                });
-            } else {
-                roomListParsed[roomList[socketId].id] = [{
-                    socketId: socketId,
-                    name: roomList[socketId].name
-                }];
-            }
-        }
-        callback(roomListParsed);
+        callback(roomList);
     });
 
-    socket.on("newroom", function (data) {
-        console.log("New room: ", data);
-        io.emit('newroom', data);
+    socket.on("newroom", function (room, error) {
+        createNewRoom(room, error);
     })
 });
