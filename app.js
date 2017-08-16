@@ -115,7 +115,7 @@ io.on('connection', function (socket) {
                 if (roomList[roomId].participant[i].socketId == socket.id) {
                     roomList[roomId].participant.splice(i, 1);
                     if (socket.room) {
-                        socket.emit('leave', socket.id);
+                        io.emit('leave', roomList[roomId].participant[i]);
                         socket.leave(socket.id);
                     }
                     break;
@@ -125,7 +125,7 @@ io.on('connection', function (socket) {
                 delete roomList[roomId];
                 if (socket.room) {
                     var room = socket.room;
-                    io.to(room).emit('leave', socket.id);
+                    io.emit('leaveall', roomId);
                     socket.leave(room);
                 }
             }
