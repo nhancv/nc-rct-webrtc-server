@@ -146,13 +146,11 @@ io.on('connection', function (socket) {
         let friends = socketIds.map((socketId) => {
 
             let room = findParticipant(socketId);
-            console.log("findParticipant: ", room);
             return {
                 socketId: socketId,
                 displayName: room === null ? null : room.displayName
             }
         }).filter((friend) => friend.socketId != socket.id);
-        console.log("friends: ", friends);
         callback(friends);
         //broadcast
         friends.forEach((friend) => {
@@ -161,7 +159,12 @@ io.on('connection', function (socket) {
                 displayName: displayName
             });
         });
-        io.emit("notify-client", roomList[roomId]);
+        io.emit("notify-client", {
+            id: roomId,
+            name: roomList[roomId].name,
+            participant: roomList[roomId].participant,
+            token: roomList[roomId].token
+        });
     });
 
     socket.on("exchange-server", function (data) {

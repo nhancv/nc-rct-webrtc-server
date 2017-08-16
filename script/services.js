@@ -9,8 +9,8 @@ let friends = null; //list of {socketId, displayName}
 let me = null; //{socketId, displayName}
 
 function join(roomId, displayName, callback) {
-    socket.emit("join-server", {roomId, displayName}, function (result) {
-        friends = result;
+    socket.emit("join-server", {roomId, displayName}, function (friendsList) {
+        friends = friendsList;
         console.log('Joins', friends);
         friends.forEach((friend) => {
             createPeerConnection(friend, true);
