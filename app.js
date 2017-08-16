@@ -106,14 +106,14 @@ io.on('connection', function (socket) {
         for (let roomId in roomList) {
             for (let i = 0; i < roomList[roomId].participant.length; i++) {
                 if (roomList[roomId].participant[i].socketId == socket.id) {
-                    roomList[roomId].participant.splice(i, 1);
                     io.emit("leave-client", roomList[roomId].participant[i]);
+                    roomList[roomId].participant.splice(i, 1);
                     break;
                 }
             }
             if (roomList[roomId].participant.length === 0) {
-                delete roomList[roomId];
                 io.emit("leaveall-client", roomId);
+                delete roomList[roomId];
             }
         }
         if (socket.room) {
