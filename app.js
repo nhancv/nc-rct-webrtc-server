@@ -113,7 +113,7 @@ io.on('connection', function (socket) {
         for (let roomId in roomList) {
             for (let i = 0; i < roomList[roomId].participant.length; i++) {
                 if (roomList[roomId].participant[i].socketId == socket.id) {
-                    roomList[roomId].participant[i].splice(i, 1);
+                    roomList[roomId].participant.splice(i, 1);
                     if (socket.room) {
                         socket.emit('leave', socket.id);
                         socket.leave(socket.id);
