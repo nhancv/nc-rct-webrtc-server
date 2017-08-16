@@ -117,6 +117,9 @@ io.on('connection', function (socket) {
                     break;
                 }
             }
+            if (roomList[roomId].participant.length === 0) {
+                delete roomList[roomId];
+            }
         }
 
         if (socket.room) {
@@ -185,5 +188,19 @@ io.on('connection', function (socket) {
 
     socket.on("newroom", function (room, error) {
         createNewRoom(room, error);
+    });
+
+    socket.on('remove', function (room, callback) {
+        if (roomList.hasOwnProperty(room.id)) {
+            if (room.token && roomList[room.id].token == room.token) {
+                delete roomList[room.id];
+                callback(true, "Succeed");
+            } else {
+                callback(false, "Token is not found");
+            }
+        } else {
+            callback(false, "Room is not exist");
+        }
+
     })
 });
