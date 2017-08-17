@@ -168,8 +168,8 @@ socket.on("exchange-client", function (data) {
     exchange(data);
 });
 
-socket.on("leave-client", function (room) {
-    leave(room.socketId);
+socket.on("leave-client", function (participant) {
+    leave(participant.socketId);
 });
 
 socket.on("join-client", function (friend) {
