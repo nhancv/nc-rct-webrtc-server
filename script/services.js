@@ -147,25 +147,29 @@ function exchange(data) {
 
 function leave(socketId) {
     console.log('leave', socketId);
-    let pc = peerConnections[socketId];
-    pc.close();
-    delete peerConnections[socketId];
-    if (window.onFriendLeft) {
-        window.onFriendLeft(socketId);
+    if (peerConnections.hasOwnProperty(socketId)) {
+        let pc = peerConnections[socketId];
+        pc.close();
+        delete peerConnections[socketId];
+
+        if (window.onFriendLeft) {
+            window.onFriendLeft(socketId);
+        }
     }
 }
 
 socket.on("connect", function (data) {
     console.log('connect');
-    getRoomList((data) => {});
+    getRoomList((data) => {
+    });
 });
 
 socket.on("exchange-client", function (data) {
     exchange(data);
 });
 
-socket.on("leave-client", function (socketId) {
-    leave(socketId);
+socket.on("leave-client", function (room) {
+    leave(room.socketId);
 });
 
 socket.on("join-client", function (friend) {
