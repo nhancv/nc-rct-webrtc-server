@@ -111,10 +111,12 @@ io.on('connection', function (socket) {
                     break;
                 }
             }
-            if (roomList[roomId].participant.length === 0) {
-                io.emit("leaveall-client", roomId);
-                delete roomList[roomId];
-            }
+            setTimeout(function () {
+                if (roomList.hasOwnProperty(roomId) && roomList[roomId].participant.length === 0) {
+                    io.emit("leaveall-client", roomId);
+                    delete roomList[roomId];
+                }
+            }, 30000);
         }
         if (socket.room) {
             socket.leave(socket.room);
