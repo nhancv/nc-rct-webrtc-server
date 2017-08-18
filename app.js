@@ -18,6 +18,23 @@ if (isLocal) {
 var io = require('socket.io')(server);
 
 var roomList = {};
+/*
+roomId {
+    name:
+    particular: []
+    token:
+}
+ */
+var templateList = {};
+/*
+templateRoomId {
+	id:
+	config: {
+		background:
+	}
+}
+ */
+
 
 //------------------------------------------------------------------------------
 //  Serving static files
@@ -187,6 +204,47 @@ io.on('connection', function (socket) {
 
     socket.on("newroom-server", function (room, error) {
         createNewRoom(room, error);
+    });
+
+    socket.on("template-server", function (request, error) {
+
+        /*************************************************
+         * request{
+         *  action: 'put' or 'get'
+         *  template: {
+         *      id
+         *      roomId
+         *      config: {
+         *          background:
+         *          }
+         *      }
+         * }
+         */
+
+        try {
+            let action = request.action;
+            let template = request.template;
+            if (action == 'put') {
+                templateList[template.roomId] = template;
+                io.emit("template-client", {
+                    id: template.roomId,
+                    template: template
+                });
+            } else if (action == 'get') {
+                if (templateList.hasOwnProperty(template.roomId)) {
+                    socket.emit("template-client", {
+                        id: template.roomId,
+                        template: templateList[template.roomId]
+                    });
+                } else {
+                    if (error) error("Template not found.");
+                }
+            }
+        } catch (e) {
+            if (error) error("Error: " + e);
+        }
+
+
     });
 
     socket.on("remove-server", function (room, callback) {
