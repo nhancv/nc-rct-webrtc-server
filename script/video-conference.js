@@ -12,13 +12,14 @@ countFriends(VIDEO_CONFERENCE_ROOM, (count) => {
 
 //Join conversation
 let handleJoinConversationClick = () => {
+  let roomId = $(".join-container .roomId").val();
   let name = $(".join-container .name").val();
   if(name == null || name == "") {
     alert("Name cannot be empty");
     return;
   }
   //ELSE:
-  join(VIDEO_CONFERENCE_ROOM, name, () => {
+  join(roomId, name, () => {
     $(".join-container").hide();
     $(".videos-container").show();
     //@nhancv TODO: Disable because data channel is not stable
