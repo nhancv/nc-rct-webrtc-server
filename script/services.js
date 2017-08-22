@@ -219,3 +219,40 @@ function broadcastMessage(message) {
         pc.textDataChannel.send(JSON.stringify(message));
     }
 }
+
+
+socket.on("template-client", function (data) {
+    console.log(data);
+});
+function getTemplate() {
+    console.log("getTemplate");
+    let request = {
+        action: 'get',
+        template: {
+            id: 1,
+            roomId: VIDEO_CONFERENCE_ROOM,
+            config: {
+                background: null
+            }
+        }
+    };
+    socket.emit("template-server", request, (error) => {
+        console.log(error);
+    });
+}
+function putTemplate() {
+    console.log("putTemplate");
+    let request = {
+        action: 'put',
+        template: {
+            id: 1,
+            roomId: VIDEO_CONFERENCE_ROOM,
+            config: {
+                background: null
+            }
+        }
+    };
+    socket.emit("template-server", request, (error) => {
+        console.log(error);
+    });
+}

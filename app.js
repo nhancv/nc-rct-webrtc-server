@@ -227,13 +227,13 @@ io.on('connection', function (socket) {
             if (action == 'put') {
                 templateList[template.roomId] = template;
                 io.emit("template-client", {
-                    id: template.roomId,
+                    roomId: template.roomId,
                     template: template
                 });
             } else if (action == 'get') {
                 if (templateList.hasOwnProperty(template.roomId)) {
                     socket.emit("template-client", {
-                        id: template.roomId,
+                        roomId: template.roomId,
                         template: templateList[template.roomId]
                     });
                 } else {
