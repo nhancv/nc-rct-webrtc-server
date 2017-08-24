@@ -57,8 +57,8 @@ function createPeerConnection(friend, isOffer) {
 
     retVal.oniceconnectionstatechange = function (event) {
         console.log('oniceconnectionstatechange', event);
-        if (event.target.iceConnectionState === 'connected') {
-            createDataChannel();
+        if (event.target.iceConnectionState === 'connected' && isOffer) {
+            createDataChannel(isOffer, null);
         }
     };
 
@@ -68,23 +68,28 @@ function createPeerConnection(friend, isOffer) {
 
     retVal.onaddstream = function (event) {
         console.log('onaddstream', event);
-        //var element = document.createElement('video');
-        //element.id = "remoteView" + socketId;
-        //element.autoplay = 'autoplay';
-        //element.src = URL.createObjectURL(event.stream);
-        //remoteViewContainer.appendChild(element);
         if (window.onFriendCallback !== null) {
             window.onFriendCallback(socketId, event.stream);
         }
     };
 
+    retVal.ondatachannel = function (event) {
+        console.log('ondatachannel', event);
+        createDataChannel(isOffer, event);
+    };
+
     retVal.addStream(localStream);
 
-    function createDataChannel() {
+    function createDataChannel(isOffer, _event) {
         if (retVal.textDataChannel) {
             return;
         }
-        let dataChannel = retVal.createDataChannel("text");
+        var dataChannel = null;
+        if(isOffer){
+            dataChannel = retVal.createDataChannel("text");
+        }else{
+            dataChannel = _event.channel;
+        }
 
         dataChannel.onerror = function (error) {
             console.log("dataChannel.onerror", error);
@@ -224,6 +229,7 @@ function broadcastMessage(message) {
 socket.on("template-client", function (data) {
     console.log(data);
 });
+
 function getTemplate() {
     console.log("getTemplate");
     let request = {
@@ -240,6 +246,7 @@ function getTemplate() {
         console.log(error);
     });
 }
+
 function putTemplate() {
     console.log("putTemplate");
     let request = {

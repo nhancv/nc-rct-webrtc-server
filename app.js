@@ -44,13 +44,20 @@ app.get('/', function (req, res) {
 });
 
 app.get('/draw', function (req, res) {
-    console.log('get /');
+    console.log('get /draw');
     res.sendFile(__dirname + '/draw.html');
+});
+
+app.get('/test', function (req, res) {
+    console.log('get /testdatachannel');
+    res.sendFile(__dirname + '/testdatachannel.html');
 });
 
 app.use('/style', express.static(path.join(__dirname, 'style')));
 app.use('/script', express.static(path.join(__dirname, 'script')));
 app.use('/image', express.static(path.join(__dirname, 'image')));
+
+app.use('/testdatachannel', express.static(path.join(__dirname, 'testdatachannel')));
 
 server.listen(serverPort, function () {
     console.log('Rewebrtc-server is up and running at %s port', serverPort);

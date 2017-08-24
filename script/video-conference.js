@@ -22,8 +22,7 @@ let handleJoinConversationClick = () => {
   join(roomId, name, () => {
     $(".join-container").hide();
     $(".videos-container").show();
-    //@nhancv TODO: Disable because data channel is not stable
-    // $(".chat-container").show();
+    $(".chat-container").show();
   });
 };
 
