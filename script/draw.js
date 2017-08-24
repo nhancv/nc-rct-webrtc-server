@@ -60,6 +60,7 @@ function createPeerConnection(friend, isOffer) {
 
     retVal.ondatachannel = function (event) {
         console.log('ondatachannel', event);
+        $("#connect-to-peers").hide();
         createDataChannel(isOffer, event);
     };
 
@@ -221,6 +222,7 @@ function drawPoint(point) {
     var c = document.getElementById("myCanvas");
     var ctx = c.getContext("2d");
     ctx.beginPath();
+    ctx.moveTo(point.x, point.y);
     ctx.arc(point.x, point.y, 1, 0, 2 * Math.PI, true);
     ctx.strokeStyle = '#00F';
     ctx.stroke();
@@ -231,8 +233,8 @@ let drawing = false;
 function onMouseClick(event) {
     drawing = true;
     let point = {
-        x: event.clientX,
-        y: event.clientY
+        x: event.offsetX,
+        y: event.offsetY
     };
     broadcastMessage(point);
     drawPoint(point);
