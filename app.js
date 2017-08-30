@@ -155,6 +155,7 @@ io.on('connection', function (socket) {
      */
     socket.on("join-server", function (joinData, callback) { //Join room
         let roomId = joinData.roomId;
+        let roomImage = joinData.roomImage;
         let displayName = joinData.displayName;
         socket.join(roomId);
         socket.room = roomId;
@@ -163,7 +164,7 @@ io.on('connection', function (socket) {
         createNewRoom({
             id: roomId,
             name: roomId,
-            roomImage: null,
+            roomImage: roomImage,
             token: socket.id
         });
         roomList[roomId].participant.push({
