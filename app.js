@@ -21,7 +21,7 @@ var roomList = {};
 /*
 roomId {
     name:
-    roomImage: null
+    image: null
     particular: []
     token:
 }
@@ -113,7 +113,7 @@ function createNewRoom(room, error) {
 
         roomList[room.id] = {
             name: room.name,
-            roomImage: null,
+            image: room.image,
             token: room.token,
             participant: []
         };
@@ -164,7 +164,7 @@ io.on('connection', function (socket) {
         createNewRoom({
             id: roomId,
             name: roomId,
-            roomImage: roomImage,
+            image: roomImage,
             token: socket.id
         });
         roomList[roomId].participant.push({
@@ -192,7 +192,7 @@ io.on('connection', function (socket) {
         io.emit("notify-client", {
             id: roomId,
             name: roomList[roomId].name,
-            roomImage: null,
+            image: roomList[roomId].image,
             participant: roomList[roomId].participant,
             token: roomList[roomId].token
         });
